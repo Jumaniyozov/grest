@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"github.com/jumaniyozov/grest/internal/config"
 	"github.com/jumaniyozov/grest/internal/user"
+	"github.com/jumaniyozov/grest/internal/user/db"
+	"github.com/jumaniyozov/grest/pkg/client/mongodb"
 	"github.com/jumaniyozov/grest/pkg/logging"
 	"net"
 	"net/http"
@@ -20,6 +23,28 @@ func main() {
 	router := httprouter.New()
 
 	cfg := config.GetConfig()
+
+	client, err := mongodb.NewClient(
+		context.Background(),
+		cfg.MongoDB.Host,
+		cfg.MongoDB.Port,
+		cfg.MongoDB.Username,
+		cfg.MongoDB.Password,
+		cfg.MongoDB.Database,
+		cfg.MongoDB.Auth_db,
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	storage := db.NewStorage(client, cfg.MongoDB.Collection, &logger)
+
+	users, err := storage.FindAll(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
+	logger.Info(users)
 
 	userHandler := user.NewHandler(&logger)
 	userHandler.Register(router)
