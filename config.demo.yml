@@ -1,0 +1,28 @@
+---
+
+is_debug: true
+listen:
+  type: port
+  bind_ip: 0.0.0.0
+  port: 8080
+mongodb:
+  host: localhost
+  port: 27017
+  database: user-service
+  auth_db:
+  username:
+  password:
+  collection: users
+postgres:
+  host: localhost
+  port: 5432
+  database: db
+  auth_db:
+  username: postgres
+  password: 123456qwe
+storage:
+  host: localhost
+  port: 5432
+  database: public
+  username: postgres
+  password: 123456qwe
